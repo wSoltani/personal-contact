@@ -106,8 +106,17 @@ function isValidFormData(data: any): data is ContactFormData {
 	);
 }
 
+// Escape what visitors typed, so it shows up as plain text in the email
+function escapeHtml(text: string): string {
+	return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
 // Send the email using the Resend API
 async function sendEmail(formData: ContactFormData, apiKey: string, recipientEmail: string): Promise<Response> {
+	const name = escapeHtml(formData.name);
+	const email = escapeHtml(formData.email);
+	const subject = escapeHtml(formData.subject);
+	const message = escapeHtml(formData.message);
 	return fetch('https://api.resend.com/emails', {
 		method: 'POST',
 		headers: {
@@ -115,16 +124,17 @@ async function sendEmail(formData: ContactFormData, apiKey: string, recipientEma
 			Authorization: `Bearer ${apiKey}`,
 		},
 		body: JSON.stringify({
-			from: 'Portfolio Contact Form <contact@blueblood.tech>',
+			// The sender name and subject tag mark it as coming from the site at a glance
+			from: 'wsoltani.com contact form <contact@wsoltani.com>',
 			to: recipientEmail,
-			subject: `Contact Form: ${formData.subject}`,
+			subject: `[wsoltani.com] ${formData.subject} from ${formData.name}`.replace(/\s+/g, ' '),
 			html: `
 				<h2>New Contact Form Submission</h2>
-				<p><strong>Name:</strong> ${formData.name}</p>
-				<p><strong>Email:</strong> ${formData.email}</p>
-				<p><strong>Subject:</strong> ${formData.subject}</p>
+				<p><strong>Name:</strong> ${name}</p>
+				<p><strong>Email:</strong> ${email}</p>
+				<p><strong>Subject:</strong> ${subject}</p>
 				<p><strong>Message:</strong></p>
-				<p>${formData.message.replace(/\n/g, '<br>')}</p>
+				<p>${message.replace(/\n/g, '<br>')}</p>
 			`,
 			reply_to: formData.email,
 		}),

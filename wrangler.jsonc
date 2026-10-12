@@ -5,6 +5,7 @@
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "personal-contact",
+	"account_id": "f29faa97cd703dcda7d529083cb3f048",
 	"main": "src/index.ts",
 	"compatibility_date": "2025-05-03",
 	"observability": {
@@ -16,7 +17,7 @@
 	 */
 	"vars": {
 		"RECIPIENT_EMAIL": "wasoltani@gmail.com",
-		"PORTFOLIO_ORIGIN": "https://wsoltani.github.io"
+		"PORTFOLIO_ORIGIN": "https://wsoltani.com"
 	}
 	/**
 	 * Note: Use secrets to store sensitive data.
